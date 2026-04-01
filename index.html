@@ -513,6 +513,22 @@
   .status-bar .dot.loading { background: #f0ad4e; animation: blink 1s infinite; }
   @keyframes blink { 50% { opacity: 0.3; } }
 
+  /* ========== MATCHUPS ========== */
+  .matchups { max-width: 700px; margin: 5px auto 10px; padding: 0 15px; display: flex; flex-direction: column; gap: 8px; }
+  .matchup-card { background: #151515; border: 1px solid #222; border-radius: 10px; padding: 12px 16px; display: flex; align-items: center; justify-content: center; gap: 12px; }
+  .matchup-card .team { display: flex; align-items: center; gap: 8px; flex: 1; }
+  .matchup-card .team.right { flex-direction: row-reverse; text-align: right; }
+  .matchup-card .team img { width: 40px; height: 40px; object-fit: contain; border-radius: 4px; }
+  .matchup-card .team-name { font-weight: 700; font-size: 0.9rem; color: #eee; line-height: 1.2; }
+  .matchup-card .team-seed { font-size: 0.65rem; color: #888; font-weight: 600; }
+  .matchup-card .vs-col { text-align: center; min-width: 50px; }
+  .matchup-card .vs-text { font-weight: 800; font-size: 0.75rem; color: #00CED1; letter-spacing: 2px; }
+  .matchup-card .game-time { font-size: 0.65rem; color: #888; margin-top: 2px; }
+  .matchup-card .game-channel { font-size: 0.6rem; color: #555; }
+  .matchup-label { font-size: 0.7rem; font-weight: 700; color: #00CED1; text-transform: uppercase; letter-spacing: 1px; text-align: center; margin-bottom: -4px; margin-top: 4px; }
+  .matchup-card.champ { border-color: #00CED1; background: linear-gradient(135deg, rgba(0,206,209,0.08), rgba(0,139,139,0.05)); }
+  @media (max-width: 600px) { .matchup-card .team img { width: 30px; height: 30px; } .matchup-card .team-name { font-size: 0.78rem; } .matchup-card { padding: 10px 12px; gap: 8px; } }
+
   /* ========== RESPONSIVE ========== */
   @media (max-width: 600px) {
     .header h1 { font-size: 1.6rem; }
@@ -560,6 +576,11 @@
 <div class="tabs">
   <button class="tab-btn active" onclick="switchBoard('women')">Women's Board</button>
   <button class="tab-btn" onclick="switchBoard('men')">Men's Board</button>
+</div>
+
+<!-- ==================== MATCHUPS ==================== -->
+<div class="matchups" id="matchups">
+  <!-- Filled by JS based on active board -->
 </div>
 
 <!-- ==================== BOARD ==================== -->
@@ -697,6 +718,26 @@ const PRICE_PER_SQUARE = 20;
 // Game labels for the 3 header rows/cols
 const GAMES = ['FF Game 1', 'FF Game 2', 'Champ'];
 
+const LOGO = id => `https://a.espncdn.com/i/teamlogos/ncaa/500/${id}.png`;
+const MATCHUP_DATA = {
+  women: { location:'Phoenix',
+    game1:{label:'Semifinal 1 \u2014 Fri Apr 3',teamA:{name:'UConn',seed:'#1',logo:LOGO(41)},teamB:{name:'South Carolina',seed:'#1',logo:LOGO(2579)},time:'7:00 PM ET',channel:'ESPN'},
+    game2:{label:'Semifinal 2 \u2014 Fri Apr 3',teamA:{name:'UCLA',seed:'#1',logo:LOGO(26)},teamB:{name:'Texas',seed:'#1',logo:LOGO(251)},time:'9:30 PM ET',channel:'ESPN'},
+    champ:{label:'Championship \u2014 Sun Apr 5',time:'3:30 PM ET',channel:'ABC'}},
+  men: { location:'Indianapolis',
+    game1:{label:'Semifinal 1 \u2014 Sat Apr 4',teamA:{name:'Illinois',seed:'#3',logo:LOGO(356)},teamB:{name:'UConn',seed:'#2',logo:LOGO(41)},time:'6:09 PM ET',channel:'TBS'},
+    game2:{label:'Semifinal 2 \u2014 Sat Apr 4',teamA:{name:'Michigan',seed:'#1',logo:LOGO(130)},teamB:{name:'Arizona',seed:'#1',logo:LOGO(12)},time:'8:49 PM ET',channel:'TBS'},
+    champ:{label:'Championship \u2014 Mon Apr 7',time:'9:20 PM ET',channel:'CBS'}}
+};
+
+function renderMatchups() {
+  const data = MATCHUP_DATA[activeBoard];
+  const container = document.getElementById('matchups');
+  function teamHTML(t,side){return `<div class="team ${side}"><img src="${t.logo}" alt="${t.name}"/><div><div class="team-name">${t.name}</div><div class="team-seed">${t.seed} seed</div></div></div>`;}
+  function vsHTML(g){return `<div class="vs-col"><div class="vs-text">VS</div><div class="game-time">${g.time}</div><div class="game-channel">${g.channel}</div></div>`;}
+  container.innerHTML=`<div class="matchup-label">${data.game1.label}</div><div class="matchup-card">${teamHTML(data.game1.teamA,'right')}${vsHTML(data.game1)}${teamHTML(data.game1.teamB,'left')}</div><div class="matchup-label">${data.game2.label}</div><div class="matchup-card">${teamHTML(data.game2.teamA,'right')}${vsHTML(data.game2)}${teamHTML(data.game2.teamB,'left')}</div><div class="matchup-label">${data.champ.label}</div><div class="matchup-card champ"><div class="team right"><div><div class="team-name" style="color:#00CED1;">Winner G1</div></div></div>${vsHTML(data.champ)}<div class="team left"><div><div class="team-name" style="color:#00CED1;">Winner G2</div></div></div></div>`;
+}
+
 // ============================================================
 // STATE
 // ============================================================
@@ -709,6 +750,7 @@ let refreshInterval = null;
 // INITIALIZATION
 // ============================================================
 document.addEventListener('DOMContentLoaded', () => {
+  renderMatchups();
   renderGrid();
   fetchBoards();
   refreshInterval = setInterval(fetchBoards, 5000);
@@ -914,6 +956,7 @@ function switchBoard(board) {
     ? "Women's Final Four & Championship Squares"
     : "Men's Final Four & Championship Squares";
   document.getElementById('board-title').textContent = title;
+  renderMatchups();
   updateGrid();
 }
 
