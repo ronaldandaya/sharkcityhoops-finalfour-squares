@@ -54,6 +54,13 @@
     letter-spacing: 1px;
     text-transform: uppercase;
   }
+  .header .deadline-note {
+    color: #ff6b6b;
+    font-weight: 700;
+    font-size: 0.85rem;
+    margin-top: 6px;
+    letter-spacing: 0.5px;
+  }
 
   /* ========== STATS BAR ========== */
   .stats-bar {
@@ -141,13 +148,6 @@
     -webkit-overflow-scrolling: touch;
   }
 
-  /*
-   * Grid layout:
-   *   3 left header cols (game labels) | 10 square cols | 3 right game labels
-   * Rows:
-   *   3 top header rows (game teal cells) + 10 square rows
-   * Plus bottom game labels under the 3 left cols
-   */
   .grid {
     display: grid;
     grid-template-columns: 28px 28px 28px repeat(10, 1fr);
@@ -156,7 +156,7 @@
     min-width: 520px;
   }
 
-  /* Teal header cells (top rows & left columns) */
+  /* Teal header cells */
   .grid-header-cell {
     background: linear-gradient(135deg, #00CED1, #00B2B5);
     display: flex;
@@ -168,7 +168,6 @@
     min-height: 28px;
   }
 
-  /* Game labels on right side of header rows */
   .game-label-right {
     display: flex;
     align-items: center;
@@ -179,7 +178,6 @@
     white-space: nowrap;
   }
 
-  /* Game labels below left columns */
   .game-label-bottom {
     font-size: 0.55rem;
     font-weight: 700;
@@ -193,7 +191,6 @@
     justify-content: center;
   }
 
-  /* Corner area (3x3 top-left) */
   .grid-corner {
     background: #111;
   }
@@ -231,12 +228,70 @@
     color: #00CED1;
     font-weight: 700;
   }
+  .square.selected {
+    background: rgba(0, 206, 209, 0.3);
+    border-color: #00CED1;
+    box-shadow: 0 0 8px rgba(0, 206, 209, 0.4);
+  }
+  .square.selected::after {
+    content: '\2713';
+    position: absolute;
+    top: 2px;
+    right: 3px;
+    font-size: 0.55rem;
+    color: #00CED1;
+    font-weight: 900;
+  }
   .square.just-claimed {
     animation: claimPulse 0.6s ease-out;
   }
   @keyframes claimPulse {
     0% { background: #00CED1; transform: scale(1.1); }
     100% { background: rgba(0, 206, 209, 0.12); transform: scale(1); }
+  }
+
+  /* ========== SELECTION BAR (floating) ========== */
+  .selection-bar {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #111;
+    border-top: 2px solid #00CED1;
+    padding: 14px 20px;
+    z-index: 50;
+    text-align: center;
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.5);
+  }
+  .selection-bar.show { display: flex; align-items: center; justify-content: center; gap: 16px; flex-wrap: wrap; }
+  .selection-bar .sel-info {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #ccc;
+  }
+  .selection-bar .sel-info strong { color: #00CED1; }
+  .selection-bar .sel-btn {
+    background: linear-gradient(135deg, #00CED1, #008B8B);
+    color: #000;
+    border: none;
+    padding: 10px 28px;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .selection-bar .sel-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 15px rgba(0,206,209,0.3); }
+  .selection-bar .sel-clear {
+    background: #333;
+    color: #aaa;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
   }
 
   /* ========== MODAL ========== */
@@ -256,7 +311,7 @@
     border: 2px solid #00CED1;
     border-radius: 16px;
     padding: 30px;
-    max-width: 400px;
+    max-width: 440px;
     width: 90%;
     text-align: center;
   }
@@ -300,6 +355,83 @@
   }
   .modal-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
   .modal .error-msg { color: #ff6b6b; font-size: 0.85rem; margin-top: 10px; min-height: 20px; }
+
+  /* ========== PAYMENT MODAL ========== */
+  .payment-info {
+    background: #0a0a0a;
+    border: 1px solid #333;
+    border-radius: 10px;
+    padding: 20px;
+    margin: 15px 0;
+    text-align: left;
+  }
+  .payment-info .pay-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 0;
+    font-size: 0.9rem;
+    color: #ccc;
+  }
+  .payment-info .pay-row strong { color: #00CED1; }
+  .payment-info .pay-divider {
+    border-top: 1px solid #333;
+    margin: 8px 0;
+  }
+  .payment-info .zelle-info {
+    text-align: center;
+    margin-top: 12px;
+    padding: 12px;
+    background: #111;
+    border-radius: 8px;
+    border: 1px solid #00CED1;
+  }
+  .payment-info .zelle-info .zelle-label {
+    font-size: 0.75rem;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+  }
+  .payment-info .zelle-info .zelle-addr {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #00CED1;
+    word-break: break-all;
+  }
+  .payment-info .or-text {
+    text-align: center;
+    color: #666;
+    font-size: 0.85rem;
+    margin: 10px 0;
+    font-style: italic;
+  }
+  .payment-info .invoice-note {
+    text-align: center;
+    color: #aaa;
+    font-size: 0.85rem;
+  }
+  .payment-info .deadline-warn {
+    text-align: center;
+    color: #ff6b6b;
+    font-weight: 700;
+    font-size: 0.85rem;
+    margin-top: 10px;
+  }
+
+  /* Step indicators in modal */
+  .modal-steps {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 15px;
+  }
+  .modal-steps .step-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #333;
+  }
+  .modal-steps .step-dot.active { background: #00CED1; }
 
   /* ========== PAYOUTS ========== */
   .payouts {
@@ -354,6 +486,7 @@
   .footer {
     text-align: center;
     padding: 20px;
+    padding-bottom: 80px; /* extra room for selection bar */
     color: #444;
     font-size: 0.75rem;
     border-top: 1px solid #1a1a1a;
@@ -398,8 +531,9 @@
 <div class="header">
   <h1>MARCH MADNESS SQUARES</h1>
   <p>Shark City Hoops Presents</p>
-  <div class="price-tag">$20 PER SQUARE</div>
+  <div class="price-tag">$10 PER SQUARE</div>
   <div class="fundraiser-note">This is a fundraiser — All proceeds support SCH athletes</div>
+  <div class="deadline-note">Payment due by Friday morning, April 4th</div>
 </div>
 
 <!-- ==================== STATS ==================== -->
@@ -466,22 +600,30 @@
   <span class="dot loading"></span> Connecting...
 </div>
 
+<!-- ==================== SELECTION BAR (floating) ==================== -->
+<div class="selection-bar" id="selection-bar">
+  <span class="sel-info"><strong id="sel-count">0</strong> square(s) selected — <strong id="sel-total">$0</strong></span>
+  <button class="sel-btn" onclick="openClaimModal()">Claim Selected</button>
+  <button class="sel-clear" onclick="clearSelection()">Clear</button>
+</div>
+
 <!-- ==================== PAYOUTS ==================== -->
 <div class="payouts">
   <h3>Payouts (Per Board)</h3>
-  <div class="payout-row"><span>Final Four Game 1 Winner</span><span class="amount">$250</span></div>
-  <div class="payout-row"><span>Final Four Game 2 Winner</span><span class="amount">$250</span></div>
-  <div class="payout-row"><span>Championship Winner</span><span class="amount">$750</span></div>
+  <div class="payout-row"><span>Final Four Game 1 Winner</span><span class="amount">$125</span></div>
+  <div class="payout-row"><span>Final Four Game 2 Winner</span><span class="amount">$125</span></div>
+  <div class="payout-row"><span>Championship Winner</span><span class="amount">$375</span></div>
 </div>
 
 <!-- ==================== HOW TO PLAY ==================== -->
 <div class="how-to">
   <h3>How To Play</h3>
   <ol>
-    <li>Pick an open square for $20 each. Buy more squares for more chances to win.</li>
-    <li>Once all 100 squares are sold, numbers 0-9 are randomly drawn and assigned to the teal-colored rows and columns — separately for each game.</li>
-    <li>After each game, check the last digit of both teams' final scores.</li>
-    <li>Find where those two digits meet on the grid — if it's your square, you win cash!</li>
+    <li>Tap open squares to select them ($10 each). You can pick multiple squares at once.</li>
+    <li>Hit "Claim Selected" — enter your name and email so we can send payment info.</li>
+    <li>Pay via Zelle to sharkcityhoops@gmail.com or wait for an invoice. Payment due by Friday morning.</li>
+    <li>Once all 100 squares are sold, numbers 0-9 are randomly drawn for the rows and columns — separately for each game.</li>
+    <li>After each game, check the last digit of both teams' final scores. Where those digits meet is the winning square!</li>
   </ol>
 </div>
 
@@ -491,25 +633,66 @@
   Questions? DM, <a href="mailto:info@sharkcityhoops.com">email</a>, or WhatsApp us
 </div>
 
-<!-- ==================== CLAIM MODAL ==================== -->
+<!-- ==================== CLAIM MODAL (multi-step) ==================== -->
 <div class="modal-overlay" id="modal-overlay">
   <div class="modal">
-    <h2>Claim This Square</h2>
-    <div class="square-info" id="modal-square-info">Women's Board — Row 3, Col 5</div>
-    <input type="text" id="claim-name" placeholder="Enter your name" maxlength="20" autocomplete="off" />
-    <div class="modal-buttons">
-      <button class="modal-btn cancel" onclick="closeModal()">Cancel</button>
-      <button class="modal-btn claim" id="claim-btn" onclick="submitClaim()">Claim — $20</button>
+    <!-- Step 1: Name -->
+    <div id="step-name">
+      <div class="modal-steps"><span class="step-dot active"></span><span class="step-dot"></span><span class="step-dot"></span></div>
+      <h2>Claim Your Squares</h2>
+      <div class="square-info" id="modal-square-info">3 squares on Women's Board — $30</div>
+      <input type="text" id="claim-name" placeholder="Enter your name" maxlength="20" autocomplete="off" />
+      <div class="modal-buttons">
+        <button class="modal-btn cancel" onclick="closeModal()">Cancel</button>
+        <button class="modal-btn claim" id="step-name-btn" onclick="goToEmailStep()">Next</button>
+      </div>
+      <div class="error-msg" id="name-error"></div>
     </div>
-    <div class="error-msg" id="modal-error"></div>
+
+    <!-- Step 2: Email -->
+    <div id="step-email" style="display:none;">
+      <div class="modal-steps"><span class="step-dot active"></span><span class="step-dot active"></span><span class="step-dot"></span></div>
+      <h2>Your Email</h2>
+      <div class="square-info">We'll send payment details to your email</div>
+      <input type="email" id="claim-email" placeholder="Enter your email" maxlength="60" autocomplete="email" />
+      <div class="modal-buttons">
+        <button class="modal-btn cancel" onclick="goBackToName()">Back</button>
+        <button class="modal-btn claim" id="step-email-btn" onclick="submitAllClaims()">Claim — <span id="claim-total-btn">$0</span></button>
+      </div>
+      <div class="error-msg" id="email-error"></div>
+    </div>
+
+    <!-- Step 3: Payment confirmation -->
+    <div id="step-payment" style="display:none;">
+      <div class="modal-steps"><span class="step-dot active"></span><span class="step-dot active"></span><span class="step-dot active"></span></div>
+      <h2>You're In!</h2>
+      <div class="square-info" id="payment-summary">3 squares claimed successfully</div>
+      <div class="payment-info">
+        <div class="pay-row"><span>Squares</span><strong id="pay-qty">3</strong></div>
+        <div class="pay-row"><span>Price per square</span><span>$10</span></div>
+        <div class="pay-divider"></div>
+        <div class="pay-row"><span>Total Due</span><strong id="pay-total">$30</strong></div>
+        <div class="zelle-info">
+          <div class="zelle-label">Send via Zelle to</div>
+          <div class="zelle-addr">sharkcityhoops@gmail.com</div>
+        </div>
+        <div class="or-text">— or —</div>
+        <div class="invoice-note">Wait for an invoice from us at your email</div>
+        <div class="deadline-warn">Payment due by Friday morning, April 4th</div>
+      </div>
+      <div class="modal-buttons">
+        <button class="modal-btn claim" onclick="closeModal()" style="flex:1;">Done</button>
+      </div>
+    </div>
   </div>
 </div>
 
 <script>
 // ============================================================
-// CONFIGURATION — UPDATE THIS WITH YOUR APPS SCRIPT WEB APP URL
+// CONFIGURATION
 // ============================================================
 const API_URL = 'https://script.google.com/macros/s/AKfycbw8pqawk8vy6nEXPsONbcygVkYf31jsn7KRwduLwCXaD7upHyFOdOaguZMbDbK2Sjmo/exec';
+const PRICE_PER_SQUARE = 10;
 
 // Game labels for the 3 header rows/cols
 const GAMES = ['FF Game 1', 'FF Game 2', 'Champ'];
@@ -519,7 +702,7 @@ const GAMES = ['FF Game 1', 'FF Game 2', 'Champ'];
 // ============================================================
 let boards = { women: null, men: null };
 let activeBoard = 'women';
-let pendingClaim = null;
+let selectedSquares = []; // [{board, row, col}, ...]
 let refreshInterval = null;
 
 // ============================================================
@@ -531,7 +714,10 @@ document.addEventListener('DOMContentLoaded', () => {
   refreshInterval = setInterval(fetchBoards, 5000);
 
   document.getElementById('claim-name').addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') submitClaim();
+    if (e.key === 'Enter') goToEmailStep();
+  });
+  document.getElementById('claim-email').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') submitAllClaims();
   });
 });
 
@@ -548,6 +734,7 @@ async function fetchBoards() {
     boards.men = data.men;
     updateGrid();
     updateStats();
+    pruneSelection(); // remove any selected squares that got taken
     setStatus('connected', 'Live — updates every 5s');
   } catch (err) {
     console.error('Fetch error:', err);
@@ -555,34 +742,21 @@ async function fetchBoards() {
   }
 }
 
-async function claimSquareAPI(board, row, col, name) {
+async function claimSquareAPI(board, row, col, name, email) {
   const boardName = board === 'women' ? 'Women' : 'Men';
   const params = new URLSearchParams({
     action: 'claim',
     board: boardName,
     row: row,
     col: col,
-    name: name
+    name: name,
+    email: email
   });
 
-  try {
-    // Use GET with URL params to avoid CORS issues entirely
-    const resp = await fetch(API_URL + '?' + params.toString());
-    const data = await resp.json();
-    if (data.success) {
-      await fetchBoards();
-      return { success: true };
-    }
-    return { error: data.error || 'Something went wrong.' };
-  } catch (err) {
-    // Fallback: re-fetch to check if it went through
-    await new Promise(r => setTimeout(r, 1500));
-    await fetchBoards();
-    const boardData = boards[board];
-    if (boardData && boardData[row][col] === name) return { success: true };
-    if (boardData && boardData[row][col]) return { error: 'Square was claimed by ' + boardData[row][col] };
-    return { error: 'Network error. Please try again.' };
-  }
+  const resp = await fetch(API_URL + '?' + params.toString());
+  const data = await resp.json();
+  if (data.success) return { success: true };
+  return { error: data.error || 'Something went wrong.' };
 }
 
 // ============================================================
@@ -592,17 +766,11 @@ function renderGrid() {
   const grid = document.getElementById('grid');
   grid.innerHTML = '';
 
-  // Layout:
-  // Row 0-2 (top headers): [3 corner cells] [10 teal header cells]
-  // Row 3-12 (data rows): [3 teal left cells] [10 square cells]
-
   // --- TOP 3 ROWS: corner + header cells ---
   for (let hr = 0; hr < 3; hr++) {
-    // 3 corner cells (top-left 3x3 area)
     for (let hc = 0; hc < 3; hc++) {
       grid.appendChild(makeDiv('grid-corner'));
     }
-    // 10 teal header cells for this game row
     for (let c = 0; c < 10; c++) {
       const cell = makeDiv('grid-header-cell', '—');
       cell.id = `col-h-${hr}-${c}`;
@@ -612,14 +780,12 @@ function renderGrid() {
 
   // --- 10 DATA ROWS ---
   for (let r = 0; r < 10; r++) {
-    // 3 teal left header cells (one per game)
     for (let hc = 0; hc < 3; hc++) {
       const cell = makeDiv('grid-header-cell', '—');
       cell.id = `row-h-${hc}-${r}`;
       grid.appendChild(cell);
     }
 
-    // 10 square cells
     for (let c = 0; c < 10; c++) {
       const sq = makeDiv('square');
       sq.id = `sq-${r}-${c}`;
@@ -644,15 +810,19 @@ function updateGrid() {
       if (name) {
         sq.textContent = name;
         sq.classList.add('taken');
+        sq.classList.remove('selected');
         if (!wasTaken) sq.classList.add('just-claimed');
       } else {
         sq.textContent = '';
         sq.classList.remove('taken', 'just-claimed');
+        // re-apply selected state
+        const isSelected = selectedSquares.some(s => s.board === activeBoard && s.row === r && s.col === c);
+        sq.classList.toggle('selected', isSelected);
       }
     }
   }
 
-  // Header cells show '—' until numbers are drawn
+  // Headers
   for (let game = 0; game < 3; game++) {
     for (let i = 0; i < 10; i++) {
       const colH = document.getElementById(`col-h-${game}-${i}`);
@@ -676,7 +846,64 @@ function updateStats() {
 }
 
 // ============================================================
-// INTERACTIONS
+// SELECTION LOGIC
+// ============================================================
+function onSquareClick(row, col) {
+  const board = boards[activeBoard];
+  if (!board || board[row][col]) return; // taken
+
+  const idx = selectedSquares.findIndex(s => s.board === activeBoard && s.row === row && s.col === col);
+  const sq = document.getElementById(`sq-${row}-${col}`);
+
+  if (idx >= 0) {
+    // Deselect
+    selectedSquares.splice(idx, 1);
+    sq.classList.remove('selected');
+  } else {
+    // Select
+    selectedSquares.push({ board: activeBoard, row, col });
+    sq.classList.add('selected');
+  }
+
+  updateSelectionBar();
+}
+
+function clearSelection() {
+  selectedSquares.forEach(s => {
+    const sq = document.getElementById(`sq-${s.row}-${s.col}`);
+    if (sq) sq.classList.remove('selected');
+  });
+  selectedSquares = [];
+  updateSelectionBar();
+  // Re-apply grid in case we're on a different board
+  updateGrid();
+}
+
+function pruneSelection() {
+  // Remove squares that were taken by someone else
+  selectedSquares = selectedSquares.filter(s => {
+    const boardData = boards[s.board];
+    return boardData && !boardData[s.row][s.col];
+  });
+  updateSelectionBar();
+}
+
+function updateSelectionBar() {
+  const bar = document.getElementById('selection-bar');
+  const count = selectedSquares.length;
+
+  if (count === 0) {
+    bar.classList.remove('show');
+    return;
+  }
+
+  bar.classList.add('show');
+  document.getElementById('sel-count').textContent = count;
+  document.getElementById('sel-total').textContent = '$' + (count * PRICE_PER_SQUARE);
+}
+
+// ============================================================
+// BOARD SWITCHING
 // ============================================================
 function switchBoard(board) {
   activeBoard = board;
@@ -690,54 +917,122 @@ function switchBoard(board) {
   updateGrid();
 }
 
-function onSquareClick(row, col) {
-  const board = boards[activeBoard];
-  if (!board || board[row][col]) return;
+// ============================================================
+// CLAIM MODAL FLOW
+// ============================================================
+function openClaimModal() {
+  if (selectedSquares.length === 0) return;
 
-  pendingClaim = { board: activeBoard, row, col };
-  const boardLabel = activeBoard === 'women' ? "Women's" : "Men's";
+  const count = selectedSquares.length;
+  const total = count * PRICE_PER_SQUARE;
+
+  // Summarize boards
+  const wCount = selectedSquares.filter(s => s.board === 'women').length;
+  const mCount = selectedSquares.filter(s => s.board === 'men').length;
+  let boardSummary = '';
+  if (wCount && mCount) boardSummary = `${wCount} Women's + ${mCount} Men's`;
+  else if (wCount) boardSummary = `Women's Board`;
+  else boardSummary = `Men's Board`;
+
   document.getElementById('modal-square-info').textContent =
-    `${boardLabel} Board — Row ${row}, Col ${col}`;
+    `${count} square${count > 1 ? 's' : ''} on ${boardSummary} — $${total}`;
 
+  document.getElementById('claim-total-btn').textContent = '$' + total;
+
+  // Reset to step 1
+  document.getElementById('step-name').style.display = '';
+  document.getElementById('step-email').style.display = 'none';
+  document.getElementById('step-payment').style.display = 'none';
   document.getElementById('claim-name').value = '';
-  document.getElementById('modal-error').textContent = '';
-  document.getElementById('claim-btn').disabled = false;
-  document.getElementById('claim-btn').textContent = 'Claim — $20';
+  document.getElementById('claim-email').value = '';
+  document.getElementById('name-error').textContent = '';
+  document.getElementById('email-error').textContent = '';
+  document.getElementById('step-name-btn').disabled = false;
+
   document.getElementById('modal-overlay').classList.add('show');
   setTimeout(() => document.getElementById('claim-name').focus(), 100);
 }
 
-function closeModal() {
-  document.getElementById('modal-overlay').classList.remove('show');
-  pendingClaim = null;
+function goToEmailStep() {
+  const name = document.getElementById('claim-name').value.trim();
+  if (!name) { document.getElementById('name-error').textContent = 'Please enter your name.'; return; }
+  if (name.length < 2) { document.getElementById('name-error').textContent = 'Name must be at least 2 characters.'; return; }
+
+  document.getElementById('step-name').style.display = 'none';
+  document.getElementById('step-email').style.display = '';
+  setTimeout(() => document.getElementById('claim-email').focus(), 100);
 }
 
-async function submitClaim() {
-  const name = document.getElementById('claim-name').value.trim();
-  const errorEl = document.getElementById('modal-error');
-  const btn = document.getElementById('claim-btn');
+function goBackToName() {
+  document.getElementById('step-email').style.display = 'none';
+  document.getElementById('step-name').style.display = '';
+  setTimeout(() => document.getElementById('claim-name').focus(), 100);
+}
 
-  if (!name) { errorEl.textContent = 'Please enter your name.'; return; }
-  if (name.length < 2) { errorEl.textContent = 'Name must be at least 2 characters.'; return; }
+async function submitAllClaims() {
+  const name = document.getElementById('claim-name').value.trim();
+  const email = document.getElementById('claim-email').value.trim();
+  const errorEl = document.getElementById('email-error');
+  const btn = document.getElementById('step-email-btn');
+
+  // Basic email validation
+  if (!email) { errorEl.textContent = 'Please enter your email.'; return; }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { errorEl.textContent = 'Please enter a valid email.'; return; }
 
   btn.disabled = true;
   btn.textContent = 'Claiming...';
   errorEl.textContent = '';
 
-  try {
-    const result = await claimSquareAPI(pendingClaim.board, pendingClaim.row, pendingClaim.col, name);
-    if (result.success) {
-      closeModal();
-    } else {
-      errorEl.textContent = result.error || 'Something went wrong. Try again.';
-      btn.disabled = false;
-      btn.textContent = 'Claim — $20';
+  let successCount = 0;
+  let lastError = '';
+
+  // Claim each selected square
+  for (const sq of selectedSquares) {
+    try {
+      const result = await claimSquareAPI(sq.board, sq.row, sq.col, name, email);
+      if (result.success) {
+        successCount++;
+      } else {
+        lastError = result.error;
+      }
+    } catch (err) {
+      lastError = 'Network error';
     }
-  } catch (err) {
-    errorEl.textContent = 'Network error. Please try again.';
-    btn.disabled = false;
-    btn.textContent = 'Claim — $20';
   }
+
+  // Refresh boards
+  await fetchBoards();
+
+  if (successCount > 0) {
+    // Show payment step
+    const total = successCount * PRICE_PER_SQUARE;
+    document.getElementById('payment-summary').textContent =
+      `${successCount} square${successCount > 1 ? 's' : ''} claimed successfully!`;
+    document.getElementById('pay-qty').textContent = successCount;
+    document.getElementById('pay-total').textContent = '$' + total;
+
+    document.getElementById('step-email').style.display = 'none';
+    document.getElementById('step-payment').style.display = '';
+
+    // Clear selection
+    selectedSquares = [];
+    updateSelectionBar();
+    updateGrid();
+  } else {
+    errorEl.textContent = lastError || 'Could not claim squares. They may have been taken.';
+    btn.disabled = false;
+    btn.textContent = 'Claim — $' + (selectedSquares.length * PRICE_PER_SQUARE);
+  }
+
+  if (successCount > 0 && lastError) {
+    // Some succeeded, some failed
+    document.getElementById('payment-summary').textContent =
+      `${successCount} claimed, some were already taken`;
+  }
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('show');
 }
 
 // ============================================================
