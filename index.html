@@ -34,6 +34,42 @@
   .header p {
     color: #aaa;
     font-size: 0.95rem;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SCH March Madness Squares</title>
+<style>
+  /* ========== RESET & BASE ========== */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #0a0a0a;
+    color: #fff;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ========== HEADER ========== */
+  .header {
+    text-align: center;
+    padding: 30px 20px 10px;
+  }
+  .header h1 {
+    font-size: 2.2rem;
+    font-weight: 900;
+    letter-spacing: 2px;
+    margin: 10px 0 5px;
+    background: linear-gradient(135deg, #00CED1, #20B2AA);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .header p {
+    color: #aaa;
+    font-size: 0.95rem;
     margin-bottom: 5px;
   }
   .header .price-tag {
@@ -399,25 +435,25 @@
   <h1>MARCH MADNESS SQUARES</h1>
   <p>Shark City Hoops Presents</p>
   <div class="price-tag">$20 PER SQUARE</div>
-  <div class="fundraiser-note">This is a fundraiser â All proceeds support SCH athletes</div>
+  <div class="fundraiser-note">This is a fundraiser — All proceeds support SCH athletes</div>
 </div>
 
 <!-- ==================== STATS ==================== -->
 <div class="stats-bar">
   <div class="stat">
-    <div class="stat-value" id="available-count">â</div>
+    <div class="stat-value" id="available-count">—</div>
     <div class="stat-label">Available</div>
   </div>
   <div class="stat">
-    <div class="stat-value" id="claimed-count">â</div>
+    <div class="stat-value" id="claimed-count">—</div>
     <div class="stat-label">Claimed</div>
   </div>
   <div class="stat">
-    <div class="stat-value" id="women-count">â</div>
+    <div class="stat-value" id="women-count">—</div>
     <div class="stat-label">Women's Open</div>
   </div>
   <div class="stat">
-    <div class="stat-value" id="men-count">â</div>
+    <div class="stat-value" id="men-count">—</div>
     <div class="stat-label">Men's Open</div>
   </div>
 </div>
@@ -479,9 +515,9 @@
   <h3>How To Play</h3>
   <ol>
     <li>Pick an open square for $20 each. Buy more squares for more chances to win.</li>
-    <li>Once all 100 squares are sold, numbers 0-9 are randomly drawn and assigned to the teal-colored rows and columns â separately for each game.</li>
+    <li>Once all 100 squares are sold, numbers 0-9 are randomly drawn and assigned to the teal-colored rows and columns — separately for each game.</li>
     <li>After each game, check the last digit of both teams' final scores.</li>
-    <li>Find where those two digits meet on the grid â if it's your square, you win cash!</li>
+    <li>Find where those two digits meet on the grid — if it's your square, you win cash!</li>
   </ol>
 </div>
 
@@ -495,11 +531,11 @@
 <div class="modal-overlay" id="modal-overlay">
   <div class="modal">
     <h2>Claim This Square</h2>
-    <div class="square-info" id="modal-square-info">Women's Board â Row 3, Col 5</div>
+    <div class="square-info" id="modal-square-info">Women's Board — Row 3, Col 5</div>
     <input type="text" id="claim-name" placeholder="Enter your name" maxlength="20" autocomplete="off" />
     <div class="modal-buttons">
       <button class="modal-btn cancel" onclick="closeModal()">Cancel</button>
-      <button class="modal-btn claim" id="claim-btn" onclick="submitClaim()">Claim â $20</button>
+      <button class="modal-btn claim" id="claim-btn" onclick="submitClaim()">Claim — $20</button>
     </div>
     <div class="error-msg" id="modal-error"></div>
   </div>
@@ -507,7 +543,7 @@
 
 <script>
 // ============================================================
-// CONFIGURATION â UPDATE THIS WITH YOUR APPS SCRIPT WEB APP URL
+// CONFIGURATION — UPDATE THIS WITH YOUR APPS SCRIPT WEB APP URL
 // ============================================================
 const API_URL = 'https://script.google.com/macros/s/AKfycbw8pqawk8vy6nEXPsONbcygVkYf31jsn7KRwduLwCXaD7upHyFOdOaguZMbDbK2Sjmo/exec';
 
@@ -548,10 +584,10 @@ async function fetchBoards() {
     boards.men = data.men;
     updateGrid();
     updateStats();
-    setStatus('connected', 'Live â updates every 5s');
+    setStatus('connected', 'Live — updates every 5s');
   } catch (err) {
     console.error('Fetch error:', err);
-    setStatus('disconnected', 'Connection error â retrying...');
+    setStatus('disconnected', 'Connection error — retrying...');
   }
 }
 
@@ -604,7 +640,7 @@ function renderGrid() {
     }
     // 10 teal header cells for this game row
     for (let c = 0; c < 10; c++) {
-      const cell = makeDiv('grid-header-cell', 'â');
+      const cell = makeDiv('grid-header-cell', '—');
       cell.id = `col-h-${hr}-${c}`;
       grid.appendChild(cell);
     }
@@ -614,7 +650,7 @@ function renderGrid() {
   for (let r = 0; r < 10; r++) {
     // 3 teal left header cells (one per game)
     for (let hc = 0; hc < 3; hc++) {
-      const cell = makeDiv('grid-header-cell', 'â');
+      const cell = makeDiv('grid-header-cell', '—');
       cell.id = `row-h-${hc}-${r}`;
       grid.appendChild(cell);
     }
@@ -652,13 +688,13 @@ function updateGrid() {
     }
   }
 
-  // Header cells show 'â' until numbers are drawn
+  // Header cells show '—' until numbers are drawn
   for (let game = 0; game < 3; game++) {
     for (let i = 0; i < 10; i++) {
       const colH = document.getElementById(`col-h-${game}-${i}`);
       const rowH = document.getElementById(`row-h-${game}-${i}`);
-      if (colH) colH.textContent = 'â';
-      if (rowH) rowH.textContent = 'â';
+      if (colH) colH.textContent = '—';
+      if (rowH) rowH.textContent = '—';
     }
   }
 }
@@ -697,12 +733,12 @@ function onSquareClick(row, col) {
   pendingClaim = { board: activeBoard, row, col };
   const boardLabel = activeBoard === 'women' ? "Women's" : "Men's";
   document.getElementById('modal-square-info').textContent =
-    `${boardLabel} Board â Row ${row}, Col ${col}`;
+    `${boardLabel} Board — Row ${row}, Col ${col}`;
 
   document.getElementById('claim-name').value = '';
   document.getElementById('modal-error').textContent = '';
-  document.getElentById('claim-btn').disabled = false;
-  document.getElementById('claim-btn').textContent = 'Claim â $20';
+  document.getElementById('claim-btn').disabled = false;
+  document.getElementById('claim-btn').textContent = 'Claim — $20';
   document.getElementById('modal-overlay').classList.add('show');
   setTimeout(() => document.getElementById('claim-name').focus(), 100);
 }
@@ -718,7 +754,7 @@ async function submitClaim() {
   const btn = document.getElementById('claim-btn');
 
   if (!name) { errorEl.textContent = 'Please enter your name.'; return; }
-  if (name.length < 2) { errorEl.textContent = 'Name must be at least 2 characters.'; return; }
+  if *name.length < 2) { errorEl.textContent = 'Name must be at least 2 characters.'; return; }
 
   btn.disabled = true;
   btn.textContent = 'Claiming...';
@@ -731,12 +767,12 @@ async function submitClaim() {
     } else {
       errorEl.textContent = result.error || 'Something went wrong. Try again.';
       btn.disabled = false;
-      btn.textContent = 'Claim â $20';
+      btn.textContent = 'Claim — $20';
     }
   } catch (err) {
     errorEl.textContent = 'Network error. Please try again.';
     btn.disabled = false;
-    btn.textContent = 'Claim â $20';
+    btn.textContent = 'Claim — $20';
   }
 }
 
@@ -761,7 +797,7 @@ document.getElementById('modal-overlay').addEventListener('click', (e) => {
   if (e.target === e.currentTarget) closeModal();
 });
 document.addEventListener('keydown', (e) => {
-  if (.key === 'Escape') closeModal();
+  if (e.key === 'Escape') closeModal();
 });
 </script>
 </body>
