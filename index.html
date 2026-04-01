@@ -1558,7 +1558,7 @@ async function submitClaim() {
   const btn = document.getElementById('claim-btn');
 
   if (!name) { errorEl.textContent = 'Please enter your name.'; return; }
-  if *name.length < 2) { errorEl.textContent = 'Name must be at least 2 characters.'; return; }
+  if (name.length < 2) { errorEl.textContent = 'Name must be at least 2 characters.'; return; }
 
   btn.disabled = true;
   btn.textContent = 'Claiming...';
