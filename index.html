@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SCH March Madness Squares</title>
+<style>
+  /* ========== RESET & BASE ========== */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #0a0a0a;
+    color: #fff;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ========== HEADER ========== */
+  .header {
+    text-align: center;
+    padding: 30px 20px 10px;
+  }
+  .header h1 {
+    font-size: 2.2rem;
+    font-weight: 900;
+    letter-spacing: 2px;
+    margin: 10px 0 5px;
+    background: linear-gradient(135deg, #00CED1, #20B2AA);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .header p {
+    color: #aaa;
+    font-size: 0.95rem;
+    margin-bottom: 5px;
+  }
+  .header .price-tag {
+    display: inline-block;
+    background: linear-gradient(135deg, #00CED1, #008B8B);
+    color: #000;
+    font-weight: 800;
+    font-size: 1.3rem;
+    padding: 8px 24px;
+    border-radius: 30px;
+    margin: 10px 0;
+    letter-spacing: 1px;
+  }
+  .header .fundraiser-note {
+    color: #00CED1;
+    font-weight: 600;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  /* ========== STATS BAR ========== */
+  .stats-bar {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    padding: 15px 20px;
+    flex-wrap: wrap;
+  }
+  .stat { text-align: center; }
+  .stat-value { font-size: 1.8rem; font-weight: 800; color: #00CED1; }
+  .stat-label { font-size: 0.75rem; color: #888; text-transform: uppercase; letter-spacing: 1px; }
+
+  /* ========== BOARD TABS ========== */
+  .tabs {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    padding: 10px 20px;
+  }
+  .tab-btn {
+    background: #1a1a1a;
+    color: #888;
+    border: 2px solid #333;
+    padding: 12px 28px;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.5px;
+  }
+  .tab-btn:hover { border-color: #00CED1; color: #ccc; }
+  .tab-btn.active {
+    background: linear-gradient(135deg, #00CED1, #008B8B);
+    color: #000;
+    border-color: #00CED1;
+  }
+
+  /* ========== BOARD CONTAINER ========== */
+  .board-container {
+    max-width: 780px;
+    margin: 10px auto 30px;
+    padding: 0 10px;
+  }
+  .board-title {
+    text-align: center;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #ccc;
+    margin-bottom: 8px;
+  }
+
+  /* ========== AXIS LABELS ========== */
+  .axis-top-label {
+    text-align: center;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #aaa;
+    margin-bottom: 4px;
+    letter-spacing: 0.5px;
+  }
+  .axis-left-wrap {
+    display: flex;
+    align-items: stretch;
+  }
+  .axis-left-label {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #aaa;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 6px;
+    min-width: 28px;
+  }
+
+  /* ========== GRID ========== */
+  .grid-wrapper {
+    flex: 1;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /*
+   * Grid layout:
+   *   3 left header cols (game labels) | 10 square cols | 3 right game labels
+   * Rows:
+   *   3 top header rows (game teal cells) + 10 square rows
+   * Plus bottom game labels under the 3 left cols
+   */
+  .grid {
+    display: grid;
+    grid-template-columns: 28px 28px 28px repeat(10, 1fr);
+    grid-template-rows: repeat(3, 28px) repeat(10, 1fr);
+    gap: 2px;
+    min-width: 520px;
+  }
+
+  /* Teal header cells (top rows & left columns) */
+  .grid-header-cell {
+    background: linear-gradient(135deg, #00CED1, #00B2B5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.7rem;
+    color: #000;
+    min-height: 28px;
+  }
+
+  /* Game labels on right side of header rows */
+  .game-label-right {
+    display: flex;
+    align-items: center;
+    padding-left: 8px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: #888;
+    white-space: nowrap;
+  }
+
+  /* Game labels below left columns */
+  .game-label-bottom {
+    font-size: 0.55rem;
+    font-weight: 700;
+    color: #888;
+    text-align: center;
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    padding: 6px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Corner area (3x3 top-left) */
+  .grid-corner {
+    background: #111;
+  }
+
+  /* Square cells */
+  .square {
+    aspect-ratio: 1;
+    background: #1a1a1a;
+    border: 1px solid #333;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-size: 0.6rem;
+    font-weight: 600;
+    color: #ccc;
+    text-align: center;
+    padding: 2px;
+    word-break: break-word;
+    line-height: 1.2;
+    min-height: 48px;
+    position: relative;
+  }
+  .square:hover:not(.taken) {
+    background: rgba(0, 206, 209, 0.15);
+    border-color: #00CED1;
+    transform: scale(1.05);
+    z-index: 2;
+  }
+  .square.taken {
+    background: rgba(0, 206, 209, 0.12);
+    border-color: rgba(0, 206, 209, 0.3);
+    cursor: default;
+    color: #00CED1;
+    font-weight: 700;
+  }
+  .square.just-claimed {
+    animation: claimPulse 0.6s ease-out;
+  }
+  @keyframes claimPulse {
+    0% { background: #00CED1; transform: scale(1.1); }
+    100% { background: rgba(0, 206, 209, 0.12); transform: scale(1); }
+  }
+
+  /* ========== MODAL ========== */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(4px);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-overlay.show { display: flex; }
+  .modal {
+    background: #1a1a1a;
+    border: 2px solid #00CED1;
+    border-radius: 16px;
+    padding: 30px;
+    max-width: 400px;
+    width: 90%;
+    text-align: center;
+  }
+  .modal h2 { color: #00CED1; font-size: 1.3rem; margin-bottom: 5px; }
+  .modal .square-info { color: #888; font-size: 0.9rem; margin-bottom: 20px; }
+  .modal input {
+    width: 100%;
+    padding: 14px 16px;
+    background: #0a0a0a;
+    border: 2px solid #333;
+    border-radius: 10px;
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 600;
+    outline: none;
+    transition: border-color 0.2s;
+    margin-bottom: 15px;
+  }
+  .modal input:focus { border-color: #00CED1; }
+  .modal input::placeholder { color: #555; }
+  .modal-buttons { display: flex; gap: 10px; }
+  .modal-btn {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .modal-btn.cancel { background: #333; color: #aaa; }
+  .modal-btn.cancel:hover { background: #444; }
+  .modal-btn.claim {
+    background: linear-gradient(135deg, #00CED1, #008B8B);
+    color: #000;
+  }
+  .modal-btn.claim:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 15px rgba(0, 206, 209, 0.3);
+  }
+  .modal-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
+  .modal .error-msg { color: #ff6b6b; font-size: 0.85rem; margin-top: 10px; min-height: 20px; }
+
+  /* ========== PAYOUTS ========== */
+  .payouts {
+    max-width: 500px;
+    margin: 0 auto 30px;
+    padding: 20px;
+    background: #111;
+    border-radius: 12px;
+    border: 1px solid #222;
+  }
+  .payouts h3 {
+    text-align: center;
+    color: #00CED1;
+    font-size: 1rem;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .payout-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    border-bottom: 1px solid #1a1a1a;
+    font-size: 0.9rem;
+  }
+  .payout-row:last-child { border-bottom: none; }
+  .payout-row .amount { color: #00CED1; font-weight: 700; }
+
+  /* ========== HOW TO PLAY ========== */
+  .how-to {
+    max-width: 600px;
+    margin: 0 auto 30px;
+    padding: 0 20px;
+  }
+  .how-to h3 {
+    text-align: center;
+    color: #00CED1;
+    font-size: 1rem;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .how-to ol {
+    color: #aaa;
+    font-size: 0.85rem;
+    line-height: 1.7;
+    padding-left: 20px;
+  }
+  .how-to li { margin-bottom: 4px; }
+
+  /* ========== FOOTER ========== */
+  .footer {
+    text-align: center;
+    padding: 20px;
+    color: #444;
+    font-size: 0.75rem;
+    border-top: 1px solid #1a1a1a;
+  }
+  .footer a { color: #00CED1; text-decoration: none; }
+
+  /* ========== STATUS ========== */
+  .status-bar {
+    text-align: center;
+    padding: 8px;
+    font-size: 0.75rem;
+    color: #555;
+  }
+  .status-bar .dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 5px;
+    vertical-align: middle;
+  }
+  .status-bar .dot.connected { background: #00CED1; }
+  .status-bar .dot.disconnected { background: #ff6b6b; }
+  .status-bar .dot.loading { background: #f0ad4e; animation: blink 1s infinite; }
+  @keyframes blink { 50% { opacity: 0.3; } }
+
+  /* ========== RESPONSIVE ========== */
+  @media (max-width: 600px) {
+    .header h1 { font-size: 1.6rem; }
+    .grid { min-width: 440px; }
+    .square { min-height: 38px; font-size: 0.5rem; }
+    .grid-header-cell { font-size: 0.6rem; min-height: 24px; }
+    .grid { grid-template-columns: 24px 24px 24px repeat(10, 1fr); grid-template-rows: repeat(3, 24px) repeat(10, 1fr); }
+    .stats-bar { gap: 15px; }
+    .stat-value { font-size: 1.4rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ==================== HEADER ==================== -->
+<div class="header">
+  <h1>MARCH MADNESS SQUARES</h1>
+  <p>Shark City Hoops Presents</p>
+  <div class="price-tag">$20 PER SQUARE</div>
+  <div class="fundraiser-note">This is a fundraiser â All proceeds support SCH athletes</div>
+</div>
+
+<!-- ==================== STATS ==================== -->
+<div class="stats-bar">
+  <div class="stat">
+    <div class="stat-value" id="available-count">â</div>
+    <div class="stat-label">Available</div>
+  </div>
+  <div class="stat">
+    <div class="stat-value" id="claimed-count">â</div>
+    <div class="stat-label">Claimed</div>
+  </div>
+  <div class="stat">
+    <div class="stat-value" id="women-count">â</div>
+    <div class="stat-label">Women's Open</div>
+  </div>
+  <div class="stat">
+    <div class="stat-value" id="men-count">â</div>
+    <div class="stat-label">Men's Open</div>
+  </div>
+</div>
+
+<!-- ==================== BOARD TABS ==================== -->
+<div class="tabs">
+  <button class="tab-btn active" onclick="switchBoard('women')">Women's Board</button>
+  <button class="tab-btn" onclick="switchBoard('men')">Men's Board</button>
+</div>
+
+<!-- ==================== BOARD ==================== -->
+<div class="board-container">
+  <div class="board-title" id="board-title">Women's Final Four & Championship Squares</div>
+
+  <!-- Top axis label -->
+  <div class="axis-top-label">Higher Seed Team</div>
+
+  <div class="axis-left-wrap">
+    <!-- Left axis label -->
+    <div class="axis-left-label">Lower Seed Team</div>
+
+    <div class="grid-wrapper">
+      <div class="grid" id="grid">
+        <!-- Built by JS -->
+      </div>
+
+      <!-- Game labels below the 3 left header columns -->
+      <div style="display:flex; gap:2px; margin-top:4px; padding-left:0;">
+        <div class="game-label-bottom" style="width:28px; height:90px;">Final Four Game 1</div>
+        <div class="game-label-bottom" style="width:28px; height:90px;">Final Four Game 2</div>
+        <div class="game-label-bottom" style="width:28px; height:90px;">Championship</div>
+      </div>
+    </div>
+
+    <!-- Game labels to the right of header rows -->
+    <div style="display:flex; flex-direction:column; gap:2px; padding-top:0;">
+      <div class="game-label-right" style="height:28px;">Final Four Game 1</div>
+      <div class="game-label-right" style="height:28px;">Final Four Game 2</div>
+      <div class="game-label-right" style="height:28px;">Championship</div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== STATUS BAR ==================== -->
+<div class="status-bar" id="status-bar">
+  <span class="dot loading"></span> Connecting...
+</div>
+
+<!-- ==================== PAYOUTS ==================== -->
+<div class="payouts">
+  <h3>Payouts (Per Board)</h3>
+  <div class="payout-row"><span>Final Four Game 1 Winner</span><span class="amount">$250</span></div>
+  <div class="payout-row"><span>Final Four Game 2 Winner</span><span class="amount">$250</span></div>
+  <div class="payout-row"><span>Championship Winner</span><span class="amount">$750</span></div>
+</div>
+
+<!-- ==================== HOW TO PLAY ==================== -->
+<div class="how-to">
+  <h3>How To Play</h3>
+  <ol>
+    <li>Pick an open square for $20 each. Buy more squares for more chances to win.</li>
+    <li>Once all 100 squares are sold, numbers 0-9 are randomly drawn and assigned to the teal-colored rows and columns â separately for each game.</li>
+    <li>After each game, check the last digit of both teams' final scores.</li>
+    <li>Find where those two digits meet on the grid â if it's your square, you win cash!</li>
+  </ol>
+</div>
+
+<!-- ==================== FOOTER ==================== -->
+<div class="footer">
+  Shark City Hoops &copy; 2026 &nbsp;|&nbsp;
+  Questions? DM, <a href="mailto:info@sharkcityhoops.com">email</a>, or WhatsApp us
+</div>
+
+<!-- ==================== CLAIM MODAL ==================== -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal">
+    <h2>Claim This Square</h2>
+    <div class="square-info" id="modal-square-info">Women's Board â Row 3, Col 5</div>
+    <input type="text" id="claim-name" placeholder="Enter your name" maxlength="20" autocomplete="off" />
+    <div class="modal-buttons">
+      <button class="modal-btn cancel" onclick="closeModal()">Cancel</button>
+      <button class="modal-btn claim" id="claim-btn" onclick="submitClaim()">Claim â $20</button>
+    </div>
+    <div class="error-msg" id="modal-error"></div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// CONFIGURATION â UPDATE THIS WITH YOUR APPS SCRIPT WEB APP URL
+// ============================================================
+const API_URL = 'https://script.google.com/macros/s/AKfycbw8pqawk8vy6nEXPsONbcygVkYf31jsn7KRwduLwCXaD7upHyFOdOaguZMbDbK2Sjmo/exec';
+
+// Game labels for the 3 header rows/cols
+const GAMES = ['FF Game 1', 'FF Game 2', 'Champ'];
+
+// ============================================================
+// STATE
+// ============================================================
+let boards = { women: null, men: null };
+let activeBoard = 'women';
+let pendingClaim = null;
+let refreshInterval = null;
+
+// ============================================================
+// INITIALIZATION
+// ============================================================
+document.addEventListener('DOMContentLoaded', () => {
+  renderGrid();
+  fetchBoards();
+  refreshInterval = setInterval(fetchBoards, 5000);
+
+  document.getElementById('claim-name').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') submitClaim();
+  });
+});
+
+// ============================================================
+// API CALLS
+// ============================================================
+async function fetchBoards() {
+  try {
+    const resp = await fetch(API_URL + '?action=getBoards');
+    const data = await resp.json();
+    if (data.error) throw new Error(data.error);
+
+    boards.women = data.women;
+    boards.men = data.men;
+    updateGrid();
+    updateStats();
+    setStatus('connected', 'Live â updates every 5s');
+  } catch (err) {
+    console.error('Fetch error:', err);
+    setStatus('disconnected', 'Connection error â retrying...');
+  }
+}
+
+async function claimSquareAPI(board, row, col, name) {
+  const boardName = board === 'women' ? 'Women' : 'Men';
+  const params = new URLSearchParams({
+    action: 'claim',
+    board: boardName,
+    row: row,
+    col: col,
+    name: name
+  });
+
+  try {
+    // Use GET with URL params to avoid CORS issues entirely
+    const resp = await fetch(API_URL + '?' + params.toString());
+    const data = await resp.json();
+    if (data.success) {
+      await fetchBoards();
+      return { success: true };
+    }
+    return { error: data.error || 'Something went wrong.' };
+  } catch (err) {
+    // Fallback: re-fetch to check if it went through
+    await new Promise(r => setTimeout(r, 1500));
+    await fetchBoards();
+    const boardData = boards[board];
+    if (boardData && boardData[row][col] === name) return { success: true };
+    if (boardData && boardData[row][col]) return { error: 'Square was claimed by ' + boardData[row][col] };
+    return { error: 'Network error. Please try again.' };
+  }
+}
+
+// ============================================================
+// GRID RENDERING
+// ============================================================
+function renderGrid() {
+  const grid = document.getElementById('grid');
+  grid.innerHTML = '';
+
+  // Layout:
+  // Row 0-2 (top headers): [3 corner cells] [10 teal header cells]
+  // Row 3-12 (data rows): [3 teal left cells] [10 square cells]
+
+  // --- TOP 3 ROWS: corner + header cells ---
+  for (let hr = 0; hr < 3; hr++) {
+    // 3 corner cells (top-left 3x3 area)
+    for (let hc = 0; hc < 3; hc++) {
+      grid.appendChild(makeDiv('grid-corner'));
+    }
+    // 10 teal header cells for this game row
+    for (let c = 0; c < 10; c++) {
+      const cell = makeDiv('grid-header-cell', 'â');
+      cell.id = `col-h-${hr}-${c}`;
+      grid.appendChild(cell);
+    }
+  }
+
+  // --- 10 DATA ROWS ---
+  for (let r = 0; r < 10; r++) {
+    // 3 teal left header cells (one per game)
+    for (let hc = 0; hc < 3; hc++) {
+      const cell = makeDiv('grid-header-cell', 'â');
+      cell.id = `row-h-${hc}-${r}`;
+      grid.appendChild(cell);
+    }
+
+    // 10 square cells
+    for (let c = 0; c < 10; c++) {
+      const sq = makeDiv('square');
+      sq.id = `sq-${r}-${c}`;
+      sq.dataset.row = r;
+      sq.dataset.col = c;
+      sq.addEventListener('click', () => onSquareClick(r, c));
+      grid.appendChild(sq);
+    }
+  }
+}
+
+function updateGrid() {
+  const board = boards[activeBoard];
+  if (!board) return;
+
+  for (let r = 0; r < 10; r++) {
+    for (let c = 0; c < 10; c++) {
+      const sq = document.getElementById(`sq-${r}-${c}`);
+      const name = board[r][c];
+      const wasTaken = sq.classList.contains('taken');
+
+      if (name) {
+        sq.textContent = name;
+        sq.classList.add('taken');
+        if (!wasTaken) sq.classList.add('just-claimed');
+      } else {
+        sq.textContent = '';
+        sq.classList.remove('taken', 'just-claimed');
+      }
+    }
+  }
+
+  // Header cells show 'â' until numbers are drawn
+  for (let game = 0; game < 3; game++) {
+    for (let i = 0; i < 10; i++) {
+      const colH = document.getElementById(`col-h-${game}-${i}`);
+      const rowH = document.getElementById(`row-h-${game}-${i}`);
+      if (colH) colH.textContent = 'â';
+      if (rowH) rowH.textContent = 'â';
+    }
+  }
+}
+
+function updateStats() {
+  let womenOpen = 0, menOpen = 0;
+  if (boards.women) boards.women.forEach(row => row.forEach(cell => { if (!cell) womenOpen++; }));
+  if (boards.men) boards.men.forEach(row => row.forEach(cell => { if (!cell) menOpen++; }));
+
+  const totalOpen = womenOpen + menOpen;
+  document.getElementById('available-count').textContent = totalOpen;
+  document.getElementById('claimed-count').textContent = 200 - totalOpen;
+  document.getElementById('women-count').textContent = womenOpen;
+  document.getElementById('men-count').textContent = menOpen;
+}
+
+// ============================================================
+// INTERACTIONS
+// ============================================================
+function switchBoard(board) {
+  activeBoard = board;
+  document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+  event.target.classList.add('active');
+
+  const title = board === 'women'
+    ? "Women's Final Four & Championship Squares"
+    : "Men's Final Four & Championship Squares";
+  document.getElementById('board-title').textContent = title;
+  updateGrid();
+}
+
+function onSquareClick(row, col) {
+  const board = boards[activeBoard];
+  if (!board || board[row][col]) return;
+
+  pendingClaim = { board: activeBoard, row, col };
+  const boardLabel = activeBoard === 'women' ? "Women's" : "Men's";
+  document.getElementById('modal-square-info').textContent =
+    `${boardLabel} Board â Row ${row}, Col ${col}`;
+
+  document.getElementById('claim-name').value = '';
+  document.getElementById('modal-error').textContent = '';
+  document.getElentById('claim-btn').disabled = false;
+  document.getElementById('claim-btn').textContent = 'Claim â $20';
+  document.getElementById('modal-overlay').classList.add('show');
+  setTimeout(() => document.getElementById('claim-name').focus(), 100);
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('show');
+  pendingClaim = null;
+}
+
+async function submitClaim() {
+  const name = document.getElementById('claim-name').value.trim();
+  const errorEl = document.getElementById('modal-error');
+  const btn = document.getElementById('claim-btn');
+
+  if (!name) { errorEl.textContent = 'Please enter your name.'; return; }
+  if (name.length < 2) { errorEl.textContent = 'Name must be at least 2 characters.'; return; }
+
+  btn.disabled = true;
+  btn.textContent = 'Claiming...';
+  errorEl.textContent = '';
+
+  try {
+    const result = await claimSquareAPI(pendingClaim.board, pendingClaim.row, pendingClaim.col, name);
+    if (result.success) {
+      closeModal();
+    } else {
+      errorEl.textContent = result.error || 'Something went wrong. Try again.';
+      btn.disabled = false;
+      btn.textContent = 'Claim â $20';
+    }
+  } catch (err) {
+    errorEl.textContent = 'Network error. Please try again.';
+    btn.disabled = false;
+    btn.textContent = 'Claim â $20';
+  }
+}
+
+// ============================================================
+// HELPERS
+// ============================================================
+function makeDiv(className, text) {
+  const el = document.createElement('div');
+  el.className = className;
+  if (text) el.textContent = text;
+  return el;
+}
+
+function setStatus(state, message) {
+  const bar = document.getElementById('status-bar');
+  const dotClass = state === 'connected' ? 'connected'
+    : state === 'disconnected' ? 'disconnected' : 'loading';
+  bar.innerHTML = `<span class="dot ${dotClass}"></span> ${message}`;
+}
+
+document.getElementById('modal-overlay').addEventListener('click', (e) => {
+  if (e.target === e.currentTarget) closeModal();
+});
+document.addEventListener('keydown', (e) => {
+  if (.key === 'Escape') closeModal();
+});
+</script>
+</body>
+</html>
