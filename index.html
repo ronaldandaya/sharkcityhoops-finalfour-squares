@@ -617,26 +617,26 @@
   <h1>MARCH MADNESS SQUARES</h1>
   <p>Shark City Hoops Presents</p>
   <div class="price-tag">$20 PER SQUARE</div>
-  <div class="fundraiser-note">This is a fundraiser — Help send our teams to Reno Memorial Weekend!</div>
+  <div class="fundraiser-note">This is a fundraiser â Help send our teams to Reno Memorial Weekend!</div>
   <div class="deadline-note">Payment due by Friday, April 4th at 4:00 PM PT (Tip-Off!)</div>
 </div>
 
 <!-- ==================== STATS ==================== -->
 <div class="stats-bar">
   <div class="stat">
-    <div class="stat-value" id="available-count">—</div>
+    <div class="stat-value" id="available-count">â</div>
     <div class="stat-label">Available</div>
   </div>
   <div class="stat">
-    <div class="stat-value" id="claimed-count">—</div>
+    <div class="stat-value" id="claimed-count">â</div>
     <div class="stat-label">Claimed</div>
   </div>
   <div class="stat">
-    <div class="stat-value" id="women-count">—</div>
+    <div class="stat-value" id="women-count">â</div>
     <div class="stat-label">Women's Open</div>
   </div>
   <div class="stat">
-    <div class="stat-value" id="men-count">—</div>
+    <div class="stat-value" id="men-count">â</div>
     <div class="stat-label">Men's Open</div>
   </div>
 </div>
@@ -657,11 +657,11 @@
   <div class="board-title" id="board-title">Women's Final Four & Championship Squares</div>
 
   <!-- Top axis label -->
-  <div class="axis-top-label">Home Team</div>
+  <div class="axis-top-label" id="axis-top-label">Home Team</div>
 
   <div class="axis-left-wrap">
     <!-- Left axis label -->
-    <div class="axis-left-label">Away Team</div>
+    <div class="axis-left-label" id="axis-left-label">Away Team</div>
 
     <div class="grid-wrapper">
       <div class="grid" id="grid">
@@ -670,17 +670,17 @@
 
       <!-- Game labels below the 3 left header columns -->
       <div style="display:flex; gap:2px; margin-top:4px; padding-left:0;">
-        <div class="game-label-bottom" style="width:28px; height:90px;">Final Four Game 1</div>
-        <div class="game-label-bottom" style="width:28px; height:90px;">Final Four Game 2</div>
-        <div class="game-label-bottom" style="width:28px; height:90px;">Championship</div>
+        <div class="game-label-bottom" id="game-label-bot-0" style="width:28px; height:90px;">Final Four Game 1</div>
+        <div class="game-label-bottom" id="game-label-bot-1" style="width:28px; height:90px;">Final Four Game 2</div>
+        <div class="game-label-bottom" id="game-label-bot-2" style="width:28px; height:90px;">Championship</div>
       </div>
     </div>
 
     <!-- Game labels to the right of header rows -->
     <div style="display:flex; flex-direction:column; gap:2px; padding-top:0;">
-      <div class="game-label-right" style="height:28px;">Final Four Game 1</div>
-      <div class="game-label-right" style="height:28px;">Final Four Game 2</div>
-      <div class="game-label-right" style="height:28px;">Championship</div>
+      <div class="game-label-right" id="game-label-right-0" style="height:28px;">Final Four Game 1</div>
+      <div class="game-label-right" id="game-label-right-1" style="height:28px;">Final Four Game 2</div>
+      <div class="game-label-right" id="game-label-right-2" style="height:28px;">Championship</div>
     </div>
   </div>
 </div>
@@ -692,7 +692,7 @@
 
 <!-- ==================== SELECTION BAR (floating) ==================== -->
 <div class="selection-bar" id="selection-bar">
-  <span class="sel-info"><strong id="sel-count">0</strong> square(s) selected — <strong id="sel-total">$0</strong></span>
+  <span class="sel-info"><strong id="sel-count">0</strong> square(s) selected â <strong id="sel-total">$0</strong></span>
   <button class="sel-btn" onclick="openClaimModal()">Claim Selected</button>
   <button class="sel-clear" onclick="clearSelection()">Clear</button>
 </div>
@@ -710,9 +710,9 @@
   <h3>How To Play</h3>
   <ol>
     <li>Tap open squares to select them ($20 each). You can pick multiple squares at once.</li>
-    <li>Hit "Claim Selected" — enter your name and email so we can send payment info.</li>
+    <li>Hit "Claim Selected" â enter your name and email so we can send payment info.</li>
     <li>Pay via Zelle to sharkcityhoops@gmail.com or wait for an invoice. Payment due by Friday morning.</li>
-    <li>Once all 100 squares are sold, numbers 0-9 are randomly drawn for the rows and columns — separately for each game.</li>
+    <li>Once all 100 squares are sold, numbers 0-9 are randomly drawn for the rows and columns â separately for each game.</li>
     <li>After each game, check the last digit of both teams' final scores. Where those digits meet is the winning square!</li>
   </ol>
 </div>
@@ -730,7 +730,7 @@
     <div id="step-name">
       <div class="modal-steps"><span class="step-dot active"></span><span class="step-dot"></span><span class="step-dot"></span></div>
       <h2>Claim Your Squares</h2>
-      <div class="square-info" id="modal-square-info">3 squares on Women's Board — $30</div>
+      <div class="square-info" id="modal-square-info">3 squares on Women's Board â $30</div>
       <input type="text" id="claim-name" placeholder="Enter your name" maxlength="20" autocomplete="off" />
       <div class="modal-buttons">
         <button class="modal-btn cancel" onclick="closeModal()">Cancel</button>
@@ -747,7 +747,7 @@
       <input type="email" id="claim-email" placeholder="Enter your email" maxlength="60" autocomplete="email" />
       <div class="modal-buttons">
         <button class="modal-btn cancel" onclick="goBackToName()">Back</button>
-        <button class="modal-btn claim" id="step-email-btn" onclick="submitAllClaims()">Claim — <span id="claim-total-btn">$0</span></button>
+        <button class="modal-btn claim" id="step-email-btn" onclick="submitAllClaims()">Claim â <span id="claim-total-btn">$0</span></button>
       </div>
       <div class="error-msg" id="email-error"></div>
     </div>
@@ -766,7 +766,7 @@
           <div class="zelle-label">Send via Zelle to</div>
           <div class="zelle-addr">sharkcityhoops@gmail.com</div>
         </div>
-        <div class="or-text">— or —</div>
+        <div class="or-text">â or â</div>
         <div class="invoice-note">Wait for an invoice from us at your email</div>
         <div class="deadline-warn">Payment due by Friday, April 4th at 4:00 PM PT (Tip-Off!)</div>
       </div>
@@ -795,38 +795,38 @@ const MATCHUP_DATA = {
   women: {
     location: 'Phoenix',
     game1: {
-      label: 'Semifinal 1 — Fri Apr 3',
+      label: 'Semifinal 1 â Fri Apr 3',
       teamA: { name: 'UConn', seed: '#1', logo: LOGO(41) },
       teamB: { name: 'South Carolina', seed: '#1', logo: LOGO(2579) },
       time: '7:00 PM ET', channel: 'ESPN'
     },
     game2: {
-      label: 'Semifinal 2 — Fri Apr 3',
+      label: 'Semifinal 2 â Fri Apr 3',
       teamA: { name: 'UCLA', seed: '#1', logo: LOGO(26) },
       teamB: { name: 'Texas', seed: '#1', logo: LOGO(251) },
       time: '9:30 PM ET', channel: 'ESPN'
     },
     champ: {
-      label: 'Championship — Sun Apr 5',
+      label: 'Championship â Sun Apr 5',
       time: '3:30 PM ET', channel: 'ABC'
     }
   },
   men: {
     location: 'Indianapolis',
     game1: {
-      label: 'Semifinal 1 — Sat Apr 4',
+      label: 'Semifinal 1 â Sat Apr 4',
       teamA: { name: 'Illinois', seed: '#3', logo: LOGO(356) },
       teamB: { name: 'UConn', seed: '#2', logo: LOGO(41) },
       time: '6:09 PM ET', channel: 'TBS'
     },
     game2: {
-      label: 'Semifinal 2 — Sat Apr 4',
+      label: 'Semifinal 2 â Sat Apr 4',
       teamA: { name: 'Michigan', seed: '#1', logo: LOGO(130) },
       teamB: { name: 'Arizona', seed: '#1', logo: LOGO(12) },
       time: '8:49 PM ET', channel: 'TBS'
     },
     champ: {
-      label: 'Championship — Mon Apr 7',
+      label: 'Championship â Mon Apr 7',
       time: '9:20 PM ET', channel: 'CBS'
     }
   }
@@ -891,6 +891,7 @@ let refreshInterval = null;
 // ============================================================
 document.addEventListener('DOMContentLoaded', () => {
   renderMatchups();
+  updateAxisLabels();
   renderGrid();
   fetchBoards();
   refreshInterval = setInterval(fetchBoards, 5000);
@@ -918,10 +919,10 @@ async function fetchBoards() {
     updateGrid();
     updateStats();
     pruneSelection(); // remove any selected squares that got taken
-    setStatus('connected', 'Live — updates every 5s');
+    setStatus('connected', 'Live â updates every 5s');
   } catch (err) {
     console.error('Fetch error:', err);
-    setStatus('disconnected', 'Connection error — retrying...');
+    setStatus('disconnected', 'Connection error â retrying...');
   }
 }
 
@@ -955,7 +956,7 @@ function renderGrid() {
       grid.appendChild(makeDiv('grid-corner'));
     }
     for (let c = 0; c < 10; c++) {
-      const cell = makeDiv('grid-header-cell', '—');
+      const cell = makeDiv('grid-header-cell', 'â');
       cell.id = `col-h-${hr}-${c}`;
       grid.appendChild(cell);
     }
@@ -964,7 +965,7 @@ function renderGrid() {
   // --- 10 DATA ROWS ---
   for (let r = 0; r < 10; r++) {
     for (let hc = 0; hc < 3; hc++) {
-      const cell = makeDiv('grid-header-cell', '—');
+      const cell = makeDiv('grid-header-cell', 'â');
       cell.id = `row-h-${hc}-${r}`;
       grid.appendChild(cell);
     }
@@ -1005,7 +1006,7 @@ function updateGrid() {
     }
   }
 
-  // Headers — show numbers if assigned
+  // Headers â show numbers if assigned
   const gameKeys = ['game1', 'game2', 'champ'];
   const nums = boardNumbers[activeBoard] || {};
 
@@ -1018,8 +1019,8 @@ function updateGrid() {
     for (let i = 0; i < 10; i++) {
       const colH = document.getElementById(`col-h-${game}-${i}`);
       const rowH = document.getElementById(`row-h-${game}-${i}`);
-      if (colH) colH.textContent = colNums ? colNums[i] : '—';
-      if (rowH) rowH.textContent = rowNums ? rowNums[i] : '—';
+      if (colH) colH.textContent = colNums ? colNums[i] : 'â';
+      if (rowH) rowH.textContent = rowNums ? rowNums[i] : 'â';
     }
   }
 }
@@ -1034,6 +1035,30 @@ function updateStats() {
   document.getElementById('claimed-count').textContent = 200 - totalOpen;
   document.getElementById('women-count').textContent = womenOpen;
   document.getElementById('men-count').textContent = menOpen;
+}
+
+function updateAxisLabels() {
+  const data = MATCHUP_DATA[activeBoard];
+  if (!data) return;
+
+  // Bottom labels (under column headers) = Home team per game
+  // Right labels (next to row headers) = Away team per game
+  const g1home = data.game1.teamB.name;   // teamB = home
+  const g1away = data.game1.teamA.name;   // teamA = away
+  const g2home = data.game2.teamB.name;
+  const g2away = data.game2.teamA.name;
+
+  document.getElementById('game-label-bot-0').textContent = 'Game 1: ' + g1home;
+  document.getElementById('game-label-bot-1').textContent = 'Game 2: ' + g2home;
+  document.getElementById('game-label-bot-2').textContent = 'Championship';
+
+  document.getElementById('game-label-right-0').textContent = 'Game 1: ' + g1away;
+  document.getElementById('game-label-right-1').textContent = 'Game 2: ' + g2away;
+  document.getElementById('game-label-right-2').textContent = 'Championship';
+
+  // Keep main axis labels as Home/Away
+  document.getElementById('axis-top-label').textContent = 'Home Team';
+  document.getElementById('axis-left-label').textContent = 'Away Team';
 }
 
 // ============================================================
@@ -1106,6 +1131,7 @@ function switchBoard(board) {
     : "Men's Final Four & Championship Squares";
   document.getElementById('board-title').textContent = title;
   renderMatchups();
+  updateAxisLabels();
   updateGrid();
 }
 
@@ -1127,7 +1153,7 @@ function openClaimModal() {
   else boardSummary = `Men's Board`;
 
   document.getElementById('modal-square-info').textContent =
-    `${count} square${count > 1 ? 's' : ''} on ${boardSummary} — $${total}`;
+    `${count} square${count > 1 ? 's' : ''} on ${boardSummary} â $${total}`;
 
   document.getElementById('claim-total-btn').textContent = '$' + total;
 
@@ -1213,7 +1239,7 @@ async function submitAllClaims() {
   } else {
     errorEl.textContent = lastError || 'Could not claim squares. They may have been taken.';
     btn.disabled = false;
-    btn.textContent = 'Claim — $' + (selectedSquares.length * PRICE_PER_SQUARE);
+    btn.textContent = 'Claim â $' + (selectedSquares.length * PRICE_PER_SQUARE);
   }
 
   if (successCount > 0 && lastError) {
