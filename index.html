@@ -846,6 +846,8 @@ const MATCHUP_DATA = {
     },
     champ: {
       label: 'Championship &mdash; Mon Apr 7',
+      teamA: { name: 'UConn', seed: '#2', logo: LOGO(41) },
+      teamB: { name: 'Michigan', seed: '#1', logo: LOGO(130) },
       time: '9:20 PM ET', channel: 'CBS'
     }
   }
@@ -1068,11 +1070,13 @@ function updateAxisLabels() {
 
   document.getElementById('game-label-bot-0').textContent = 'Game 1: ' + g1home;
   document.getElementById('game-label-bot-1').textContent = 'Game 2: ' + g2home;
-  document.getElementById('game-label-bot-2').textContent = 'Championship';
+  const champHome = data.champ && data.champ.teamB ? data.champ.teamB.name : '';
+  document.getElementById('game-label-bot-2').textContent = champHome ? 'Champ: ' + champHome : 'Championship';
 
   document.getElementById('game-label-right-0').textContent = 'Game 1: ' + g1away;
   document.getElementById('game-label-right-1').textContent = 'Game 2: ' + g2away;
-  document.getElementById('game-label-right-2').textContent = 'Championship';
+  const champAway = data.champ && data.champ.teamA ? data.champ.teamA.name : '';
+  document.getElementById('game-label-right-2').textContent = champAway ? 'Champ: ' + champAway : 'Championship';
 
   // Keep main axis labels as Home/Away
   document.getElementById('axis-top-label').textContent = 'Home Team';
