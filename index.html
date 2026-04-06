@@ -459,6 +459,26 @@
   }
   .payout-row:last-child { border-bottom: none; }
   .payout-row .amount { color: #00CED1; font-weight: 700; }
+  .payout-row .winner-name { color: #fff; font-weight: 600; }
+  .payout-row .pending { color: #666; font-style: italic; }
+
+  /* ========== SCORES ON MATCHUP CARDS ========== */
+  .team-score {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #fff;
+    margin: 0 8px;
+    min-width: 36px;
+    text-align: center;
+  }
+  .matchup-card.final { border-color: #00CED1; }
+  .vs-final {
+    color: #00CED1;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
 
   /* ========== HOW TO PLAY ========== */
   .how-to {
@@ -715,11 +735,13 @@
 </div>
 
 <!-- ==================== PAYOUTS ==================== -->
-<div class="payouts">
-  <h3>Payouts (Per Board)</h3>
-  <div class="payout-row"><span>Final Four Game 1 Winner</span><span class="amount">$250</span></div>
-  <div class="payout-row"><span>Final Four Game 2 Winner</span><span class="amount">$250</span></div>
-  <div class="payout-row"><span>Championship Winner</span><span class="amount">$750</span></div>
+<div class="payouts" id="payouts">
+  <h3>Winners &amp; Payouts</h3>
+  <div id="payout-rows">
+    <div class="payout-row"><span>Game 1 Winner</span><span class="amount">$250</span></div>
+    <div class="payout-row"><span>Game 2 Winner</span><span class="amount">$250</span></div>
+    <div class="payout-row"><span>Championship Winner</span><span class="amount">$750</span></div>
+  </div>
 </div>
 
 <!-- ==================== HOW TO PLAY ==================== -->
@@ -815,19 +837,22 @@ const MATCHUP_DATA = {
       label: 'Semifinal 1 &mdash; Fri Apr 3',
       teamA: { name: 'UConn', seed: '#1', logo: LOGO(41) },
       teamB: { name: 'South Carolina', seed: '#1', logo: LOGO(2579) },
-      time: '7:00 PM ET', channel: 'ESPN'
+      time: '7:00 PM ET', channel: 'ESPN',
+      score: { teamA: 48, teamB: 62 }
     },
     game2: {
       label: 'Semifinal 2 &mdash; Fri Apr 3',
       teamA: { name: 'UCLA', seed: '#1', logo: LOGO(26) },
       teamB: { name: 'Texas', seed: '#1', logo: LOGO(251) },
-      time: '9:30 PM ET', channel: 'ESPN'
+      time: '9:30 PM ET', channel: 'ESPN',
+      score: { teamA: 51, teamB: 44 }
     },
     champ: {
       label: 'Championship &mdash; Sun Apr 5',
       teamA: { name: 'South Carolina', seed: '#1', logo: LOGO(2579) },
       teamB: { name: 'UCLA', seed: '#1', logo: LOGO(26) },
-      time: '3:30 PM ET', channel: 'ABC'
+      time: '3:30 PM ET', channel: 'ABC',
+      score: { teamA: 51, teamB: 79 }
     }
   },
   men: {
@@ -836,13 +861,15 @@ const MATCHUP_DATA = {
       label: 'Semifinal 1 &mdash; Sat Apr 4',
       teamA: { name: 'Illinois', seed: '#3', logo: LOGO(356) },
       teamB: { name: 'UConn', seed: '#2', logo: LOGO(41) },
-      time: '6:09 PM ET', channel: 'TBS'
+      time: '6:09 PM ET', channel: 'TBS',
+      score: { teamA: 62, teamB: 71 }
     },
     game2: {
       label: 'Semifinal 2 &mdash; Sat Apr 4',
       teamA: { name: 'Michigan', seed: '#1', logo: LOGO(130) },
       teamB: { name: 'Arizona', seed: '#1', logo: LOGO(12) },
-      time: '8:49 PM ET', channel: 'TBS'
+      time: '8:49 PM ET', channel: 'TBS',
+      score: { teamA: 91, teamB: 73 }
     },
     champ: {
       label: 'Championship &mdash; Mon Apr 7',
@@ -857,14 +884,21 @@ function renderMatchups() {
   const data = MATCHUP_DATA[activeBoard];
   const container = document.getElementById('matchups');
 
-  function teamHTML(t, side) {
+  function teamHTML(t, side, score) {
+    const scoreHTML = score != null ? `<div class="team-score">${score}</div>` : '';
     return `<div class="team ${side}">
       <img src="${t.logo}" alt="${t.name}" />
       <div><div class="team-name">${t.name}</div><div class="team-seed">${t.seed} seed</div></div>
+      ${scoreHTML}
     </div>`;
   }
 
   function vsHTML(game) {
+    if (game.score) {
+      return `<div class="vs-col">
+        <div class="vs-final">FINAL</div>
+      </div>`;
+    }
     return `<div class="vs-col">
       <div class="vs-text">VS</div>
       <div class="game-time">${game.time}</div>
@@ -872,24 +906,28 @@ function renderMatchups() {
     </div>`;
   }
 
+  const g1s = data.game1.score;
+  const g2s = data.game2.score;
+  const cs = data.champ.score;
+
   container.innerHTML = `
     <div class="matchup-label">${data.game1.label}</div>
-    <div class="matchup-card">
-      ${teamHTML(data.game1.teamA, 'right')}
+    <div class="matchup-card${g1s ? ' final' : ''}">
+      ${teamHTML(data.game1.teamA, 'right', g1s ? g1s.teamA : null)}
       ${vsHTML(data.game1)}
-      ${teamHTML(data.game1.teamB, 'left')}
+      ${teamHTML(data.game1.teamB, 'left', g1s ? g1s.teamB : null)}
     </div>
     <div class="matchup-label">${data.game2.label}</div>
-    <div class="matchup-card">
-      ${teamHTML(data.game2.teamA, 'right')}
+    <div class="matchup-card${g2s ? ' final' : ''}">
+      ${teamHTML(data.game2.teamA, 'right', g2s ? g2s.teamA : null)}
       ${vsHTML(data.game2)}
-      ${teamHTML(data.game2.teamB, 'left')}
+      ${teamHTML(data.game2.teamB, 'left', g2s ? g2s.teamB : null)}
     </div>
     <div class="matchup-label">${data.champ.label}</div>
-    <div class="matchup-card champ">
-      ${data.champ.teamA ? teamHTML(data.champ.teamA, 'right') : '<div class="team right"><div><div class="team-name" style="color:#00CED1;">Winner G1</div></div></div>'}
+    <div class="matchup-card champ${cs ? ' final' : ''}">
+      ${data.champ.teamA ? teamHTML(data.champ.teamA, 'right', cs ? cs.teamA : null) : '<div class="team right"><div><div class="team-name" style="color:#00CED1;">Winner G1</div></div></div>'}
       ${vsHTML(data.champ)}
-      ${data.champ.teamB ? teamHTML(data.champ.teamB, 'left') : '<div class="team left"><div><div class="team-name" style="color:#00CED1;">Winner G2</div></div></div>'}
+      ${data.champ.teamB ? teamHTML(data.champ.teamB, 'left', cs ? cs.teamB : null) : '<div class="team left"><div><div class="team-name" style="color:#00CED1;">Winner G2</div></div></div>'}
     </div>
   `;
 }
@@ -937,6 +975,7 @@ async function fetchBoards() {
     if (data.scores) { boardScores = data.scores; }
     updateGrid();
     highlightWinners();
+    renderPayouts();
     updateStats();
     pruneSelection(); // remove any selected squares that got taken
     setStatus('connected', 'Live &mdash; updates every 5s');
@@ -1130,6 +1169,42 @@ function highlightWinners() {
 }
 
 // ============================================================
+// WINNERS & PAYOUTS
+// ============================================================
+function renderPayouts() {
+  const data = MATCHUP_DATA[activeBoard];
+  const board = boards[activeBoard];
+  const nums = boardNumbers[activeBoard] || {};
+  if (!data || !board) return;
+
+  const payoutAmounts = [250, 250, 750];
+  const gameKeys = ['game1', 'game2', 'champ'];
+  const gameLabels = ['Game 1', 'Game 2', 'Championship'];
+  let rows = '';
+
+  for (let g = 0; g < 3; g++) {
+    const game = data[gameKeys[g]];
+    const score = game.score;
+    const gameNums = nums[gameKeys[g]];
+    const amt = '$' + payoutAmounts[g];
+
+    if (!score) {
+      // Game not played yet
+      rows += `<div class="payout-row"><span>${gameLabels[g]}</span><span class="pending">TBD &mdash; ${amt}</span></div>`;
+      continue;
+    }
+
+    const winTeam = score.teamB > score.teamA ? game.teamB.name : game.teamA.name;
+    rows += `<div class="payout-row">
+      <span>${gameLabels[g]}: ${winTeam} wins ${score.teamB > score.teamA ? score.teamB + '-' + score.teamA : score.teamA + '-' + score.teamB}</span>
+      <span class="amount">${amt}</span>
+    </div>`;
+  }
+
+  document.getElementById('payout-rows').innerHTML = rows;
+}
+
+// ============================================================
 // SELECTION LOGIC
 // ============================================================
 function onSquareClick(row, col) {
@@ -1199,8 +1274,10 @@ function switchBoard(board) {
     : "Men's Final Four & Championship Squares";
   document.getElementById('board-title').textContent = title;
   renderMatchups();
+  renderPayouts();
   updateAxisLabels();
   updateGrid();
+  highlightWinners();
 }
 
 // ============================================================
